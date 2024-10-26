@@ -18,7 +18,7 @@ function RiderLogin() {
         setLoading(true);
         setError('');
         try {
-            const response = await axios.post("http://localhost:8090/api/v1/user/login", { email, password });
+            const response = await axios.post("http://localhost:8090/api/v1/user/login", { email, password },{withCredentials:true});
             setUser(response.data);
             if(response.status === 200){
                 navigate('/bookride')

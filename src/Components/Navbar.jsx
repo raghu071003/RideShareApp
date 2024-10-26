@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
 
 function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const {isLoggedin} = useAuth()
     const navigate = useNavigate();
+    const handleLogout = async () => {
+        try {
+            await axios.post("http://localhost:8090/api/v1/user/logout", {}, { withCredentials: true });
+
+            document.cookie = "";
+            document.cookie = "";
+
+            navigate('/login');
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+    };
 
     return (
         <nav className="bg-white shadow-md">
@@ -16,7 +30,11 @@ function Navbar() {
                     <a href="#contact" className="text-gray-600 hover:text-blue-600">Contact</a>
                 </div>
                 <div className="hidden md:flex">
+                    {isLoggedin ?
                     <a href="/rider-login" className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Login</a>
+                    :
+                    <a onClick={handleLogout} className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Logout</a>
+                    }
                 </div>
                 <div className="md:hidden flex items-center">
                     <button onClick={() => setIsOpen(!isOpen)} className="text-gray-600 focus:outline-none">
@@ -33,7 +51,11 @@ function Navbar() {
                         <a href="#features" className="text-gray-600 hover:text-blue-600">Features</a>
                         <a href="#about" className="text-gray-600 hover:text-blue-600">About</a>
                         <a href="#contact" className="text-gray-600 hover:text-blue-600">Contact</a>
-                        <a href="/login" className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Login</a>
+                        {isLoggedin ?
+                    <a href="/rider-login" className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Login</a>
+                    :
+                    <a onClick={handleLogout} className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Logout</a>
+                    }
                     </div>
                 </div>
             )}
