@@ -1,35 +1,40 @@
 // src/RiderLogin.js
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import userlogo from "../assets/User.png"; 
 import { useAuth } from '../Context/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function RiderLogin() {
-    const { setLoggedIn,setUser,setRiderId } = useAuth(); 
+    const { setLoggedIn, setUser, setRiderId,loggedIn } = useAuth(); 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const [loading,setLoading] = useState(false)
-    const [error,setError] = useState('')
-
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    useEffect(()=>{
+        if(loggedIn){
+            navigate("/bookride")
+        }
+    })
     const login = async (email, password) => {
         setLoading(true);
         setError('');
         try {
-            const response = await axios.post("http://localhost:8090/api/v1/user/login", { email, password },{withCredentials:true});
-            setUser(response.data);
-            if(response.status === 200){
-                navigate('/bookride')
+            const response = await axios.post("http://localhost:8090/api/v1/user/login", { email, password }, { withCredentials: true });
+            
+            if (response.status === 200) {
+                setUser(response.data);
+                setLoggedIn(true);
+                setRiderId(response.data.id); // Store rider ID from response
+                navigate('/bookride'); // Redirect to book ride page
             }
-            setLoggedIn(true);
-            setRiderId(response.data.id);
         } catch (error) {
             console.error("Login error:", error);
             setError('Invalid email or password.');
             setLoggedIn(false);
-            setRiderId('')
+            setRiderId(''); // Reset Rider ID on error
         } finally {
             setLoading(false);
         }
@@ -37,10 +42,7 @@ function RiderLogin() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const res = await login(email, password);
-        if(res) {
-            navigate("/bookride")
-        }
+        await login(email, password); // Await login function
     };
 
     return (
