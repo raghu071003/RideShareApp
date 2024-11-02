@@ -14,7 +14,9 @@ const AddRider = ({ onClose }) => {
                 email,
                 password,
             },{withCredentials:true});
-            console.log('Rider added:', response.data);
+            if(response.status === 200){
+                alert("Rider added successfully");
+            }
             onClose(); // Close the modal after submission
         } catch (error) {
             console.error('Error adding rider:', error);

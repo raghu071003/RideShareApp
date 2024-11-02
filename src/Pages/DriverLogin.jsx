@@ -1,3 +1,5 @@
+// src/DriverLogin.js
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -9,13 +11,13 @@ function DriverLogin() {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
-    const {setLoggedIn,setRole,loggedIn} = useAuth();
+    const { setLoggedIn, setRole, loggedIn } = useAuth();
 
-    useEffect(()=>{
-        if(loggedIn){
-            navigate("/driver/dashboard")
+    useEffect(() => {
+        if (loggedIn) {
+            navigate("/driver/dashboard");
         }
-    })
+    }, [loggedIn, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,31 +28,31 @@ function DriverLogin() {
             const response = await axios.post('http://localhost:8090/api/v1/driver/login', {
                 email,
                 password,
-            },{withCredentials:true});
-            // console.log(response);
-            
+            }, { withCredentials: true });
+
             if (response.status === 200) {
-                setLoggedIn(true)
-                setRole('driver')
-                navigate("/driver/dashboard")
-                
+                setLoggedIn(true);
+                setRole('driver');
+                navigate("/driver/dashboard");
             } else {
                 setErrorMessage(response.data.message || "Login failed. Please try again.");
-                setLoggedIn(false)
+                setLoggedIn(false);
             }
         } catch (error) {
             console.error("Error during login:", error);
             setErrorMessage("An error occurred while trying to log in.");
-            setLoggedIn(false)
+            setLoggedIn(false);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen w-full bg-gradient-to-r from-green-600 to-green-400">
-            <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-md">
-                <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Driver Login</h2>
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-4 md:p-6 lg:p-8 w-full">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl p-10 max-w-md w-full">
+                <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
+                    Driver Login
+                </h2>
                 <img 
                     src="https://cdn0.iconfinder.com/data/icons/transportation-138/50/93-1024.png" 
                     alt="Driver Icon" 
@@ -65,7 +67,7 @@ function DriverLogin() {
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="mb-4 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 transition duration-200 ease-in-out"
+                        className="mb-4 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200"
                         required
                     />
                     <input
@@ -73,12 +75,12 @@ function DriverLogin() {
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="mb-4 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 transition duration-200 ease-in-out"
+                        className="mb-4 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200"
                         required
                     />
                     <button
                         type="submit"
-                        className={`bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition duration-200 ease-in-out shadow-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-medium shadow-lg transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-xl ${loading ? 'opacity-75 cursor-not-allowed' : 'hover:opacity-90'}`}
                         disabled={loading}
                     >
                         {loading ? 'Logging in...' : 'Login'}

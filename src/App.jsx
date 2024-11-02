@@ -13,9 +13,11 @@ import Dashboard from './Pages/DriverDashboard';
 import { useAuth } from './Context/AuthContext';
 import Loading from './Components/Loading';
 import AdminDashboard from './Pages/AdminDashBoard';
+import FeaturesPage from './Pages/Features';
+import About from './Pages/About';
 
 function App() {
-    const { loggedIn } = useAuth();
+    const { loggedIn,role } = useAuth();
 
     return (
         <Router>
@@ -23,7 +25,7 @@ function App() {
                 <Navbar />
                 <div className="flex justify-center items-center min-h-screen bg-gray-100">
                     <Routes>
-                        <Route path='/' element={<HomePage />} />
+                        <Route path='/' element={role === 'driver' ? <Dashboard/> :<HomePage />} />
                         <Route path="/rider-login" element={ <RiderLogin />} />
                         <Route path="/driver-login" element={loggedIn ? <Dashboard/> :<DriverLogin />} />
                         <Route path="/admin-login" element={<AdminLogin />} />
@@ -32,6 +34,8 @@ function App() {
                         <Route path='/driver/dashboard' element={loggedIn ? <Dashboard /> : <DriverLogin />} />
                         <Route path='/load' element={<Loading />} />
                         <Route path='/admin/dashboard' element={<AdminDashboard />} />
+                        <Route path='/rider/features' element={<FeaturesPage />} />
+                        <Route path='/about' element={<About />} />
                     </Routes>
                 </div>
             </>

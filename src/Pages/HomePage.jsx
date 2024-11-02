@@ -1,9 +1,11 @@
+// src/HomePage.js
+
 import React from 'react';
+import { DollarSign, Shield, Car } from 'lucide-react'; // Importing icons from Lucide
 
 function HomePage() {
     return (
         <div className="bg-gray-50 min-h-screen w-full">
-
 
             {/* Hero Section */}
             <section className="bg-blue-600 text-white py-24 text-center w-full">
@@ -20,14 +22,17 @@ function HomePage() {
                     <h3 className="text-4xl font-bold mb-12 text-gray-800">Why Choose RideShare?</h3>
                     <div className="flex flex-wrap justify-center gap-8">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-80 transition transform hover:scale-105">
+                            <DollarSign className="w-10 h-10 mx-auto mb-4 text-blue-600" />
                             <h4 className="text-xl font-bold mb-4">Affordable Rides</h4>
                             <p>Competitive pricing and a variety of ride options to suit your needs.</p>
                         </div>
                         <div className="bg-white p-6 rounded-lg shadow-lg w-80 transition transform hover:scale-105">
+                            <Shield className="w-10 h-10 mx-auto mb-4 text-blue-600" />
                             <h4 className="text-xl font-bold mb-4">Safe and Secure</h4>
                             <p>Top-rated drivers and safety measures to ensure a secure experience.</p>
                         </div>
                         <div className="bg-white p-6 rounded-lg shadow-lg w-80 transition transform hover:scale-105">
+                            <Car className="w-10 h-10 mx-auto mb-4 text-blue-600" />
                             <h4 className="text-xl font-bold mb-4">Fast Pickup</h4>
                             <p>Get picked up quickly with our wide network of available drivers.</p>
                         </div>
