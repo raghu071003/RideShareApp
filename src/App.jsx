@@ -12,7 +12,7 @@ import UpdateRide from './Pages/UpdateRide';
 import Dashboard from './Pages/DriverDashboard';
 import { useAuth } from './Context/AuthContext';
 import Loading from './Components/Loading';
-import AdminDashboard from './Pages/AdminDashBoard';
+import AdminDashboard from './Pages/AdminDashBoard.jsx';
 import FeaturesPage from './Pages/Features';
 import About from './Pages/About';
 // import Map from './Pages/Map';
