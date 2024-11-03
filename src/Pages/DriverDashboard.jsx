@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Car, User, CheckCircle, XCircle, Users } from 'lucide-react'; // Importing Lucide icons
+import { MapPin, Clock, Car, User, CheckCircle, XCircle, Users, IndianRupee } from 'lucide-react'; // Importing Lucide icons
 
 const Dashboard = () => {
     const [showUpdateRide, setShowUpdateRide] = useState(false);
@@ -121,6 +121,7 @@ const Dashboard = () => {
                                     <p><strong><Clock className="inline mr-1" /> Pickup Time:</strong> {request.pickup_time}</p>
                                     <p><strong><Clock className="inline mr-1" /> Date:</strong> {new Date(request.pickup_date).toLocaleDateString()}</p>
                                     <p><strong><Users className="inline mr-1" /> Seating:</strong> {request.seating_required}</p>
+                                    <p><strong><IndianRupee className="inline mr-1" /> Price:</strong> {request.price}</p>
                                 </div>
                                 <div className="flex justify-between mt-6 space-x-2">
                                     <button

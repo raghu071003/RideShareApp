@@ -29,9 +29,10 @@ function AdminLogin() {
         } catch (error) {
             console.error("Login error:", error);
             setError('Invalid username or password.'); // Set error message
+            setLoggedIn(false)
+
         } finally {
             setLoading(false); // Reset loading state
-            setLoggedIn(false)
         }
     };
 

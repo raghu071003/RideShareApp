@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../Context/AuthContext';
-import { Loader2, MapPin, Clock, Calendar, Car, Users, ArrowRight, Navigation } from 'lucide-react';
+import { Loader2, MapPin, Clock, Calendar, Car, Users, ArrowRight, Navigation, IndianRupee } from 'lucide-react';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import UpcomingRides from '../Components/UpcomingRides';
 
 // Replace with your Mapbox access token
-mapboxgl.accessToken = '';
+mapboxgl.accessToken = "pk.eyJ1Ijoic2FpcmFnaHUiLCJhIjoiY20wbTVibnFnMGI1dzJwczhiaGV1ZzRpNyJ9.bmz6PzeKxEIQSXCR7OxYXA";
 
 const UpdateRider = () => {
     const { riderId } = useAuth();
@@ -24,6 +25,7 @@ const UpdateRider = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [rideavailable, setridAvailable] = useState(false);
     const [showMap, setShowMap] = useState(false);
+    const [price,setPrice] = useState();
 
     // Map refs
     const mapContainer = useRef(null);
@@ -135,6 +137,7 @@ const UpdateRider = () => {
                 ...prevDetails,
                 distance: (routeInfo.distance / 1000).toFixed(2) + ' km',
                 duration: (routeInfo.duration / 60).toFixed(2) + ' min',
+                price: Math.round((routeInfo.distance /1000).toFixed(2)) > 20 ? Math.round((routeInfo.distance /1000).toFixed(2))*5 : 40
             }));
         } catch (error) {
             console.error('Map initialization error:', error);
@@ -176,8 +179,8 @@ const UpdateRider = () => {
 
                     // Initialize map after successful ride request
                     await initializeMap(formData.source, formData.destination);
-                    console.log(rideDetails);
-                    console.log(response.data);
+                    // console.log(rideDetails);
+                    // console.log(response.data);
 
 
                 } else {
@@ -221,6 +224,7 @@ const UpdateRider = () => {
                     pickupTime: rideDetails.pickup_time,
                     pickupDate: formattedPickupDate, // Use the formatted date
                     req_seating: selectedCapacity,
+                    price:rideDetails.price
                 },
                 {
                     withCredentials: true, // This enables sending cookies with the request
@@ -268,8 +272,6 @@ const UpdateRider = () => {
 
                     {!showMap ? (
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            {/* Original form fields */}
-                            {/* ... (keep all the original form input fields) ... */}
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                                 <input
@@ -438,6 +440,21 @@ const UpdateRider = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="bg-white p-3 rounded-lg shadow-sm">
+                                                <div className="flex items-center space-x-2">
+                                                    <IndianRupee className="h-5 w-5 text-gray-500" />
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-600">Price</p>
+                                                        <p className="text-gray-800">
+                                                            {rideDetails.price}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
                                     </div>
                                 </div>
                             )}
@@ -475,6 +492,7 @@ const UpdateRider = () => {
                     )}
                 </div>
             </div>
+            <UpcomingRides />
         </div>
     );
 };

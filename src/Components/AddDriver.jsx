@@ -6,6 +6,8 @@ const AddDriver = ({ onClose }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [mobileNo, setMobileNo] = useState('');
+    const [empId,setEmpId] = useState('')
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,7 +18,9 @@ const AddDriver = ({ onClose }) => {
                 password,
                 mobile_no: mobileNo,
             },{withCredentials:true});
-            console.log('Driver added:', response.data);
+            if(response.status === 200){
+                alert("Driver added successfully")
+            }
             onClose(); // Close the modal after submission
         } catch (error) {
             console.error('Error adding driver:', error);
@@ -64,6 +68,16 @@ const AddDriver = ({ onClose }) => {
                             placeholder="Mobile No"
                             value={mobileNo}
                             onChange={(e) => setMobileNo(e.target.value)}
+                            required
+                            className="border rounded-lg w-full p-2"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Employee Id"
+                            value={empId}
+                            onChange={(e) => setEmpId(e.target.value)}
                             required
                             className="border rounded-lg w-full p-2"
                         />
