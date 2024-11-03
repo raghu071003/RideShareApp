@@ -12,9 +12,11 @@ import UpdateRide from './Pages/UpdateRide';
 import Dashboard from './Pages/DriverDashboard';
 import { useAuth } from './Context/AuthContext';
 import Loading from './Components/Loading';
-import AdminDashboard from './Pages/adminDashBoard';
+import AdminDashboard from './Pages/AdminDashBoard';
 import FeaturesPage from './Pages/Features';
 import About from './Pages/About';
+// import Map from './Pages/Map';
+import MapboxRouting from './Pages/Map';
 
 function App() {
     const { loggedIn,role } = useAuth();
@@ -36,6 +38,7 @@ function App() {
                         <Route path='/admin/dashboard' element={<AdminDashboard />} />
                         <Route path='/rider/features' element={<FeaturesPage />} />
                         <Route path='/about' element={<About />} />
+                        <Route path='/map' element={<MapboxRouting />} />
                     </Routes>
                 </div>
             </>
