@@ -3,8 +3,7 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import { MapPin, Car, Calendar, Clock, Users, Navigation } from 'lucide-react';
 
-mapboxgl.accessToken = '';
-
+mapboxgl.accessToken = process.env.mapbox_token;
 const UpdateRide = () => {
     const [source, setSource] = useState('');
     const [destination, setDestination] = useState('');
