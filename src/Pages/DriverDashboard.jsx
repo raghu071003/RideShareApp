@@ -42,11 +42,11 @@ const Dashboard = () => {
         
     }, []);
 
-    const handleAccept = async (requestId, requiredCapacity) => {
+    const handleAccept = async (requestId, requiredCapacity,price) => {
         try {
             await axios.post(
                 `http://localhost:8090/api/v1/driver/respondToRide`,
-                { requestId, response: 'accepted', requiredCapacity },
+                { requestId, response: 'accepted', requiredCapacity,price },
                 { withCredentials: true }
             );
             setRideRequests(rideRequests.filter(request => request.id !== requestId));
@@ -74,7 +74,7 @@ const Dashboard = () => {
         <div className="flex flex-col min-h-screen p-8 bg-gradient-to-b from-blue-50 to-blue-100 w-full">
             <h2 className="text-4xl font-bold mb-8 text-center text-blue-800">Driver Dashboard</h2>
 
-            {error && <p className="text-red-500 text-center">{error}</p>} {/* Display error message */}
+            {error && <p className="text-red-500 text-center">{}</p>} {/* Display error message */}
 
             <div className="flex-grow mb-10">
                 {loadingRides ? (
@@ -125,7 +125,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className="flex justify-between mt-6 space-x-2">
                                     <button
-                                        onClick={() => handleAccept(request.id, request.seating_required)}
+                                        onClick={() => handleAccept(request.id, request.seating_required,request.price)}
                                         className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-all duration-200 flex items-center"
                                     >
                                         <CheckCircle className="mr-1" /> Accept
@@ -145,12 +145,18 @@ const Dashboard = () => {
                 )}
             </div>
 
-            <div className="mt-10 text-center">
+            <div className="mt-10 text-center flex gap-10 justify-center">
                 <button
                     onClick={handleUpdateClick}
                     className="bg-blue-700 text-white py-3 px-8 rounded-lg hover:bg-blue-800 transition-all duration-200 shadow-lg transform hover:-translate-y-1"
                 >
                     {showUpdateRide ? 'Hide Update Ride' : 'Update or Add Ride'}
+                </button>
+                <button
+                    onClick={()=>navigate("/driver/currentRides")}
+                    className="bg-blue-700 text-white py-3 px-8 rounded-lg hover:bg-blue-800 transition-all duration-200 shadow-lg transform hover:-translate-y-1"
+                >
+                    See Your Rides
                 </button>
             </div>
         </div>

@@ -5,6 +5,10 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import UpcomingRides from '../Components/UpcomingRides';
+import CompletedRides from '../Components/CompletedRides';
+import { extract, ratio } from 'fuzzball';
+import { availableLocations } from '../assets/constants';
+
 
 // Replace with your Mapbox access token
 mapboxgl.accessToken = "pk.eyJ1Ijoic2FpcmFnaHUiLCJhIjoiY20wbTVibnFnMGI1dzJwczhiaGV1ZzRpNyJ9.bmz6PzeKxEIQSXCR7OxYXA";
@@ -17,6 +21,9 @@ const UpdateRider = () => {
         pickupTime: '',
         pickupDate: '',
     });
+
+    // Add this state to track if we're currently selecting a suggestion
+    const [isSelectingSuggestion, setIsSelectingSuggestion] = useState(false);
     const [rideDetails, setRideDetails] = useState(null);
     const [selectedCapacity, setSelectedCapacity] = useState('');
     const [message, setMessage] = useState('');
@@ -25,8 +32,10 @@ const UpdateRider = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [rideavailable, setridAvailable] = useState(false);
     const [showMap, setShowMap] = useState(false);
-    const [price,setPrice] = useState();
-
+    const [price, setPrice] = useState();
+    const [sourceSuggestions, setSourceSuggestions] = useState([]); // Separate state for source suggestions
+    const [destinationSuggestions, setDestinationSuggestions] = useState([]); // Separate state for destination suggestions
+    const [suggestions, setSuggestions] = useState([]);
     // Map refs
     const mapContainer = useRef(null);
     const map = useRef(null);
@@ -35,8 +44,65 @@ const UpdateRider = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData((prev) => ({ ...prev, [name]: value }));
+
+        // Generate suggestions using fuzzball
+        if (name === 'source') {
+            const newSuggestions = extract(value, availableLocations, { scorer: ratio });
+            setSourceSuggestions(newSuggestions.map(([suggestion]) => suggestion));
+            setDestinationSuggestions([]); // Clear destination suggestions
+        } else if (name === 'destination') {
+            const newSuggestions = extract(value, availableLocations, { scorer: ratio });
+            setDestinationSuggestions(newSuggestions.map(([suggestion]) => suggestion));
+            setSourceSuggestions([]); // Clear source suggestions
+        }
     };
+
+    // Handle input focus to show suggestions
+    const handleFocus = (e) => {
+        const { name } = e.target;
+        if (name === 'source') {
+            const newSuggestions = extract(formData.source, availableLocations, { scorer: ratio });
+            setSourceSuggestions(newSuggestions.map(([suggestion]) => suggestion));
+        } else if (name === 'destination') {
+            const newSuggestions = extract(formData.destination, availableLocations, { scorer: ratio });
+            setDestinationSuggestions(newSuggestions.map(([suggestion]) => suggestion));
+        }
+    };
+
+    // Handle input blur to clear suggestions
+    const handleBlur = (e) => {
+        // Only clear suggestions if we're not currently selecting one
+        setTimeout(() => {
+            if (!isSelectingSuggestion) {
+                const { name } = e.target;
+                if (name === 'source') {
+                    setSourceSuggestions([]);
+                } else if (name === 'destination') {
+                    setDestinationSuggestions([]);
+                }
+            }
+        }, 200); // Add a small delay to allow click event to fire first
+    };
+
+    // Handle suggestion click
+    const handleSuggestionClick = (suggestion, type) => {
+        setIsSelectingSuggestion(true);
+
+        if (type === 'source') {
+            setFormData(prev => ({ ...prev, source: suggestion }));
+            setSourceSuggestions([]);
+        } else if (type === 'destination') {
+            setFormData(prev => ({ ...prev, destination: suggestion }));
+            setDestinationSuggestions([]);
+        }
+
+        // Reset the selecting state after a short delay
+        setTimeout(() => {
+            setIsSelectingSuggestion(false);
+        }, 300);
+    };
+
 
     // Function to get coordinates from address
     const getCoordinates = async (address) => {
@@ -87,7 +153,6 @@ const UpdateRider = () => {
             },
         });
 
-        // Fit bounds to show the entire route
         const coordinates = data.routes[0].geometry.coordinates;
         const bounds = coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 
@@ -137,7 +202,7 @@ const UpdateRider = () => {
                 ...prevDetails,
                 distance: (routeInfo.distance / 1000).toFixed(2) + ' km',
                 duration: (routeInfo.duration / 60).toFixed(2) + ' min',
-                price: Math.round((routeInfo.distance /1000).toFixed(2)) > 20 ? Math.round((routeInfo.distance /1000).toFixed(2))*5 : 40
+                price: Math.round((routeInfo.distance / 1000).toFixed(2)) > 20 ? Math.round((routeInfo.distance / 1000).toFixed(2)) * 5 : 40
             }));
         } catch (error) {
             console.error('Map initialization error:', error);
@@ -172,7 +237,9 @@ const UpdateRider = () => {
             if (data) {
                 setRideDetails(data);
                 setIsSuccess(true);
-                if (response.status === 200) {
+                console.log(response.data);
+
+                if (response.status === 200 && (response.data.pickup_time || response.time)) {
                     setMessage('Ride details fetched successfully!');
                     setridAvailable(true);
                     setShowMap(true);
@@ -224,7 +291,7 @@ const UpdateRider = () => {
                     pickupTime: rideDetails.pickup_time,
                     pickupDate: formattedPickupDate, // Use the formatted date
                     req_seating: selectedCapacity,
-                    price:rideDetails.price
+                    price: rideDetails.price
                 },
                 {
                     withCredentials: true, // This enables sending cookies with the request
@@ -272,6 +339,7 @@ const UpdateRider = () => {
 
                     {!showMap ? (
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* Pickup Location */}
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                                 <input
@@ -280,11 +348,31 @@ const UpdateRider = () => {
                                     placeholder="Pickup Location"
                                     value={formData.source}
                                     onChange={handleChange}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    onFocus={handleFocus}
+                                    onBlur={handleBlur} // Add onBlur handler here
+                                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     required
                                 />
+                                {sourceSuggestions.length > 0 && (
+                                    <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-md max-h-60 overflow-auto">
+                                        {sourceSuggestions.map((suggestion, index) => (
+                                            <li
+                                                key={index}
+                                                onMouseDown={(e) => {
+                                                    e.preventDefault(); // Prevent blur event from firing
+                                                    handleSuggestionClick(suggestion, 'source');
+                                                }}
+                                                className="cursor-pointer p-2 hover:bg-gray-100"
+                                            >
+                                                {suggestion}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+
                             </div>
 
+                            {/* Destination */}
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                                 <input
@@ -293,11 +381,30 @@ const UpdateRider = () => {
                                     placeholder="Destination"
                                     value={formData.destination}
                                     onChange={handleChange}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    onFocus={handleFocus}
+                                    onBlur={handleBlur} // Add onBlur handler here
+                                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     required
                                 />
+                                {destinationSuggestions.length > 0 && (
+                                    <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-md max-h-60 overflow-auto">
+                                        {destinationSuggestions.map((suggestion, index) => (
+                                            <li
+                                                key={index}
+                                                onMouseDown={(e) => {
+                                                    e.preventDefault(); // Prevent blur event from firing
+                                                    handleSuggestionClick(suggestion, 'destination');
+                                                }}
+                                                className="cursor-pointer p-2 hover:bg-gray-100"
+                                            >
+                                                {suggestion}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
 
+                            {/* Pickup Time and Date */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="relative">
                                     <Clock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -310,7 +417,6 @@ const UpdateRider = () => {
                                         required
                                     />
                                 </div>
-
                                 <div className="relative">
                                     <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                                     <input
@@ -324,12 +430,13 @@ const UpdateRider = () => {
                                 </div>
                             </div>
 
+                            {/* Submit Button */}
                             <button
                                 type="submit"
                                 disabled={loading || isSubmitting}
                                 className={`w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-medium shadow-lg
-                                transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-xl
-                                ${(loading || isSubmitting) ? 'opacity-75 cursor-not-allowed' : 'hover:opacity-90'}`}
+                                    transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-xl
+                                    ${(loading || isSubmitting) ? 'opacity-75 cursor-not-allowed' : 'hover:opacity-90'}`}
                             >
                                 {loading ? (
                                     <span className="flex items-center justify-center">
@@ -339,6 +446,7 @@ const UpdateRider = () => {
                                 ) : 'Request Ride'}
                             </button>
                         </form>
+
                     ) : (
                         <div className="space-y-4">
                             {/* Map Container */}
@@ -493,6 +601,7 @@ const UpdateRider = () => {
                 </div>
             </div>
             <UpcomingRides />
+            <CompletedRides />
         </div>
     );
 };

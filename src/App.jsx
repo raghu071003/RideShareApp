@@ -17,6 +17,9 @@ import FeaturesPage from './Pages/Features';
 import About from './Pages/About';
 // import Map from './Pages/Map';
 import MapboxRouting from './Pages/Map';
+import Payment from './Pages/Payment.jsx';
+import CurrentRides from './Pages/CurrentRides.jsx';
+import AutoCompleteInput from './Components/AutoComplete.jsx';
 
 function App() {
     const { loggedIn,role } = useAuth();
@@ -39,6 +42,9 @@ function App() {
                         <Route path='/rider/features' element={<FeaturesPage />} />
                         <Route path='/about' element={<About />} />
                         <Route path='/map' element={<MapboxRouting />} />
+                        <Route path="/payment/:ride_id" element={<Payment />} />
+                        <Route path="/driver/currentRides" element={<CurrentRides />} />
+                        <Route path="/auto" element={<AutoCompleteInput />} /> 
                     </Routes>
                 </div>
             </>
