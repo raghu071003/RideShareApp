@@ -53,7 +53,7 @@ const UpcomingRides = () => {
                 <User className="inline mr-2" /> Ride ID: {ride.ride_id}
               </h4>
               <div className="space-y-2 text-gray-700">
-                <p><strong><User className="inline mr-1" /> Rider ID:</strong> {ride.rider_id}</p>
+                <p><strong><User className="inline mr-1" /> Driver ID:</strong> {ride.driver_id}</p>
                 <p><strong><MapPin className="inline mr-1" /> Source:</strong> {ride.source}</p>
                 <p><strong><MapPin className="inline mr-1" /> Destination:</strong> {ride.destination}</p>
                 <p><strong><Clock className="inline mr-1" /> Pickup Time:</strong> {ride.pickup_time}</p>
@@ -87,6 +87,12 @@ const UpcomingRides = () => {
                   Paid
                 </button>
                 }
+                <button
+                  onClick={() => navigate(`/user/Track/${ride.driver_id}`)}
+                  className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
+                >
+                  Track Driver
+                </button>
               </div>
             </div>
           ))}

@@ -168,7 +168,7 @@ const UpdateRide = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600 p-4 md:p-6 w-full">
+        <div className="min-h-screen bg-gradient-to-br from-blue-400 to-indigo-300 p-4 md:p-6 w-full">
             <div className="max-w-6xl mx-auto grid gap-6 lg:grid-cols-2">
                 {/* Form Section */}
                 <div className="bg-white rounded-2xl shadow-xl p-6">

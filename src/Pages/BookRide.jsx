@@ -170,7 +170,7 @@ const UpdateRider = () => {
         try {
             const sourceCoords = await getCoordinates(sourceAddr);
             const destCoords = await getCoordinates(destAddr);
-
+    
             if (!map.current) {
                 map.current = new mapboxgl.Map({
                     container: mapContainer.current,
@@ -178,37 +178,56 @@ const UpdateRider = () => {
                     center: sourceCoords,
                     zoom: 12,
                 });
-
+    
                 map.current.addControl(new mapboxgl.NavigationControl());
+    
+                // Wait for the map to load before drawing the route
+                map.current.on('load', async () => {
+                    try {
+                        const routeInfo = await drawRoute(sourceCoords, destCoords);
+                        setRideDetails((prevDetails) => ({
+                            ...prevDetails,
+                            distance: (routeInfo.distance / 1000).toFixed(2) + ' km',
+                            duration: (routeInfo.duration / 60).toFixed(2) + ' min',
+                            price: Math.round((routeInfo.distance / 1000).toFixed(2)) > 20
+                                ? Math.round((routeInfo.distance / 1000).toFixed(2)) * 5
+                                : 40,
+                        }));
+                    } catch (error) {
+                        console.error('Error during route drawing after map load:', error);
+                        setMessage('Error drawing route. Please try again.');
+                    }
+                });
+            } else {
+                // If the map already exists, draw the route directly
+                const routeInfo = await drawRoute(sourceCoords, destCoords);
+                setRideDetails((prevDetails) => ({
+                    ...prevDetails,
+                    distance: (routeInfo.distance / 1000).toFixed(2) + ' km',
+                    duration: (routeInfo.duration / 60).toFixed(2) + ' min',
+                    price: Math.round((routeInfo.distance / 1000).toFixed(2)) > 20
+                        ? Math.round((routeInfo.distance / 1000).toFixed(2)) * 5
+                        : 40,
+                }));
             }
-
-            // Add markers
+    
+            // Add source and destination markers
             if (sourceMarker.current) sourceMarker.current.remove();
             if (destinationMarker.current) destinationMarker.current.remove();
-
+    
             sourceMarker.current = new mapboxgl.Marker({ color: '#22c55e' })
                 .setLngLat(sourceCoords)
                 .addTo(map.current);
-
+    
             destinationMarker.current = new mapboxgl.Marker({ color: '#ef4444' })
                 .setLngLat(destCoords)
                 .addTo(map.current);
-
-            // Draw route and get distance and duration
-            const routeInfo = await drawRoute(sourceCoords, destCoords);
-
-            // Display distance and duration in the UI
-            setRideDetails((prevDetails) => ({
-                ...prevDetails,
-                distance: (routeInfo.distance / 1000).toFixed(2) + ' km',
-                duration: (routeInfo.duration / 60).toFixed(2) + ' min',
-                price: Math.round((routeInfo.distance / 1000).toFixed(2)) > 20 ? Math.round((routeInfo.distance / 1000).toFixed(2)) * 5 : 40
-            }));
         } catch (error) {
             console.error('Map initialization error:', error);
             setMessage('Error loading map. Please try again.');
         }
     };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();

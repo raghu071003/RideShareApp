@@ -17,7 +17,7 @@ const CurrentRides = () => {
                 const response = await axios.get('http://localhost:8090/api/v1/driver/currentRides', { withCredentials: true });
                 setRides(response.data.requests);
             } catch (error) {
-                setError("Error fetching current rides. Please try again later.");
+                // setError("Error fetching current rides. Please try again later.");
                 console.error("Fetch error:", error);
             } finally {
                 setLoading(false);

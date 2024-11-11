@@ -1,4 +1,5 @@
 export const availableLocations = [
+    'Warangal',
     'Kodambakkam', 
     'Koyambedu', 
     'Teynampet', 

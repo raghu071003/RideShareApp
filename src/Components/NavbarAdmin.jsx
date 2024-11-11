@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
 import axios from 'axios';
 
-function Navbar() {
+function AdminNavbar() {
     const [isOpen, setIsOpen] = useState(false);
     const { loggedIn, role, setLoggedIn, setRole } = useAuth();
     const navigate = useNavigate();
@@ -11,7 +11,7 @@ function Navbar() {
     const handleLogout = async () => {
         try {
             let res;
-                res = await axios.post("http://localhost:8090/api/v1/user/logout", {}, { withCredentials: true })
+                res = await axios.post("http://localhost:8090/api/v1/admin/logout", {}, { withCredentials: true });
 
             if (res && res.status === 200) {
                 document.cookie = `${role === 'driver' ? 'Driver' : ''}accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
@@ -30,10 +30,10 @@ function Navbar() {
             <div className="container mx-auto px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center">
                     <Link to="/" className="text-blue-600 font-bold ">
-                        <div className="leading-[0] flex flex-col items-center cursor-pointer" onClick={() => navigate("/")}>
+                    <div className="leading-[0] flex flex-col items-center cursor-pointer" onClick={() => navigate("/")}>
                             <p className='text-2xl font-bold text-blue-600'>RideShare</p>
                             {/* <p className='sub-font font-bold text-blue-600 md:ml-2'>Hexaware</p> */}
-                            <img src="https://hexaware.com/wp-content/themes/hexaware/assets/images/logo.svg" alt="" className='w-20'/>
+                            <img src="https://hexaware.com/wp-content/themes/hexaware/assets/images/logo.svg" alt="" className='w-20' />
                         </div>
                     </Link> 
                 </div>
@@ -151,4 +151,4 @@ function Navbar() {
     );
 }
 
-export default Navbar;
+export default AdminNavbar;

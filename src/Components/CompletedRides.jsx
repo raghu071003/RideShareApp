@@ -6,7 +6,7 @@ import RatingComponent from './RatingComponent';
 const CompletedRides = () => {
   const [loadingRides, setLoadingRides] = useState(true);
   const [completedRides, setCompletedRides] = useState([]);
-  const [feedback, setFeedback] = useState({});
+  
 
   useEffect(() => {
     const fetchCompletedRides = async () => {
@@ -23,26 +23,7 @@ const CompletedRides = () => {
     fetchCompletedRides();
   }, []);
 
-  const handleFeedbackChange = (rideId, value) => {
-    setFeedback((prevFeedback) => ({
-      ...prevFeedback,
-      [rideId]: value,
-    }));
-  };
-
-  const submitFeedback = async (rideId) => {
-    try {
-      const response = await axios.post(
-        `http://localhost:8090/api/v1/user/feedback`, 
-        { rideId, feedback: feedback[rideId] }, 
-        { withCredentials: true }
-      );
-      console.log('Feedback submitted:', response.data);
-      alert('Feedback submitted successfully!');
-    } catch (error) {
-      console.error('Error submitting feedback:', error);
-    }
-  };
+  
 
   return (
     <div className="mt-10">
@@ -84,23 +65,9 @@ const CompletedRides = () => {
                 <p>
                   <strong><Monitor className="inline mr-1" /> Status:</strong> {ride.status}
                 </p>
-                <RatingComponent />
+                <RatingComponent ride={ride}/>
               </div>
-              <div className="flex justify-between mt-6 space-x-2">
-                <input
-                  type="text"
-                  placeholder="Write your feedback"
-                  className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={feedback[ride.ride_id] || ''}
-                  onChange={(e) => handleFeedbackChange(ride.ride_id, e.target.value)}
-                />
-                <button
-                  onClick={() => submitFeedback(ride.ride_id)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  Give Feedback
-                </button>
-              </div>
+              
             </div>
           ))}
         </div>

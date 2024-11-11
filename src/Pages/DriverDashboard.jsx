@@ -1,9 +1,9 @@
-// src/Dashboard.js
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Car, User, CheckCircle, XCircle, Users, IndianRupee } from 'lucide-react'; // Importing Lucide icons
+import { MapPin, Clock, Car, Users } from 'lucide-react';
+import LocationTracker from '../Components/LocationTracker';
+import RideRequests from '../Components/rideRequests';
 
 const Dashboard = () => {
     const [showUpdateRide, setShowUpdateRide] = useState(false);
@@ -15,38 +15,39 @@ const Dashboard = () => {
     const navigate = useNavigate();
 
     const handleUpdateClick = () => {
-        setShowUpdateRide(prev => !prev); // Toggle showUpdateRide
+        setShowUpdateRide(prev => !prev);
         navigate("/driver/updateRide");
     };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [ridesResponse, requestsResponse] = await Promise.all([
-                    axios.post('http://localhost:8090/api/v1/driver/getRides', {}, { withCredentials: true }),
-                    axios.get('http://localhost:8090/api/v1/driver/getRequests', { withCredentials: true })
-                ]);
-                setRides(ridesResponse.data);
+                const requestsResponse = await axios.get('http://localhost:8090/api/v1/driver/getRequests', { withCredentials: true })
                 setRideRequests(requestsResponse.data.requests);
             } catch (error) {
-                setError("Error fetching data. Please try again later.");
+                console.error("Fetch error:", error);
+            } finally {
+                setLoadingRequests(false)
+            }
+            try {
+                const ridesResponse = await axios.post('http://localhost:8090/api/v1/driver/getRides', {}, { withCredentials: true })
+                setRides(ridesResponse.data);
+            } catch (error) {
+
                 console.error("Fetch error:", error);
             } finally {
                 setLoadingRides(false);
-                setLoadingRequests(false);
             }
         };
 
         fetchData();
-        console.log(rideRequests);
-        
     }, []);
 
-    const handleAccept = async (requestId, requiredCapacity,price) => {
+    const handleAccept = async (requestId, requiredCapacity, price) => {
         try {
             await axios.post(
                 `http://localhost:8090/api/v1/driver/respondToRide`,
-                { requestId, response: 'accepted', requiredCapacity,price },
+                { requestId, response: 'accepted', requiredCapacity, price },
                 { withCredentials: true }
             );
             setRideRequests(rideRequests.filter(request => request.id !== requestId));
@@ -73,8 +74,8 @@ const Dashboard = () => {
     return (
         <div className="flex flex-col min-h-screen p-8 bg-gradient-to-b from-blue-50 to-blue-100 w-full">
             <h2 className="text-4xl font-bold mb-8 text-center text-blue-800">Driver Dashboard</h2>
-
-            {error && <p className="text-red-500 text-center">{}</p>} {/* Display error message */}
+            <LocationTracker />
+            {error && <p className="text-red-500 text-center">{error}</p>}
 
             <div className="flex-grow mb-10">
                 {loadingRides ? (
@@ -103,47 +104,12 @@ const Dashboard = () => {
                 )}
             </div>
 
-            <div className="mt-10">
-                <h3 className="text-3xl font-bold mb-6 text-center text-blue-700">Ride Requests</h3>
-                {loadingRequests ? (
-                    <p className="text-center text-blue-600 text-lg">Loading ride requests...</p>
-                ) : rideRequests.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {rideRequests.map(request => (
-                            <div key={request.id} className="bg-white border border-gray-200 rounded-lg shadow-md p-6 transition-transform transform hover:-translate-y-2 hover:shadow-lg">
-                                <h4 className="text-xl font-semibold mb-3 text-blue-700">
-                                    <User className="inline mr-2" /> Request ID: {request.id}
-                                </h4>
-                                <div className="space-y-2 text-gray-700">
-                                    <p><strong><User className="inline mr-1" /> Rider ID:</strong> {request.rider_id}</p>
-                                    <p><strong><MapPin className="inline mr-1" /> Source:</strong> {request.source}</p>
-                                    <p><strong><MapPin className="inline mr-1" /> Destination:</strong> {request.destination}</p>
-                                    <p><strong><Clock className="inline mr-1" /> Pickup Time:</strong> {request.pickup_time}</p>
-                                    <p><strong><Clock className="inline mr-1" /> Date:</strong> {new Date(request.pickup_date).toLocaleDateString()}</p>
-                                    <p><strong><Users className="inline mr-1" /> Seating:</strong> {request.seating_required}</p>
-                                    <p><strong><IndianRupee className="inline mr-1" /> Price:</strong> {request.price}</p>
-                                </div>
-                                <div className="flex justify-between mt-6 space-x-2">
-                                    <button
-                                        onClick={() => handleAccept(request.id, request.seating_required,request.price)}
-                                        className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-all duration-200 flex items-center"
-                                    >
-                                        <CheckCircle className="mr-1" /> Accept
-                                    </button>
-                                    <button
-                                        onClick={() => handleReject(request.id)}
-                                        className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-all duration-200 flex items-center"
-                                    >
-                                        <XCircle className="mr-1" /> Reject
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-center text-gray-600">No ride requests found.</p>
-                )}
-            </div>
+            <RideRequests 
+                rideRequests={rideRequests}
+                loadingRequests={loadingRequests}
+                onAccept={handleAccept}
+                onReject={handleReject}
+            />
 
             <div className="mt-10 text-center flex gap-10 justify-center">
                 <button
@@ -153,7 +119,7 @@ const Dashboard = () => {
                     {showUpdateRide ? 'Hide Update Ride' : 'Update or Add Ride'}
                 </button>
                 <button
-                    onClick={()=>navigate("/driver/currentRides")}
+                    onClick={() => navigate("/driver/currentRides")}
                     className="bg-blue-700 text-white py-3 px-8 rounded-lg hover:bg-blue-800 transition-all duration-200 shadow-lg transform hover:-translate-y-1"
                 >
                     See Your Rides

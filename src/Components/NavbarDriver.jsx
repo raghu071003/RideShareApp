@@ -3,16 +3,15 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
 import axios from 'axios';
 
-function Navbar() {
+function NavbarDriver() {
     const [isOpen, setIsOpen] = useState(false);
     const { loggedIn, role, setLoggedIn, setRole } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
         try {
-            let res;
-                res = await axios.post("http://localhost:8090/api/v1/user/logout", {}, { withCredentials: true })
-
+            
+            const res = await axios.post("http://localhost:8090/api/v1/driver/logout", {}, { withCredentials: true });
             if (res && res.status === 200) {
                 document.cookie = `${role === 'driver' ? 'Driver' : ''}accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
                 document.cookie = `${role === 'driver' ? 'Driver' : ''}refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
@@ -26,26 +25,26 @@ function Navbar() {
     };
 
     return (
-        <nav className="bg-gray-800 shadow-md border-b border-gray-200 sticky top-0 z-50">
+        <nav className="bg-gray-800 shadow-md border-b border-gray-700 sticky top-0 z-50">
             <div className="container mx-auto px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center">
                     <Link to="/" className="text-blue-600 font-bold ">
-                        <div className="leading-[0] flex flex-col items-center cursor-pointer" onClick={() => navigate("/")}>
+                    <div className="leading-[0] flex flex-col items-center cursor-pointer" onClick={() => navigate("/")}>
                             <p className='text-2xl font-bold text-blue-600'>RideShare</p>
                             {/* <p className='sub-font font-bold text-blue-600 md:ml-2'>Hexaware</p> */}
                             <img src="https://hexaware.com/wp-content/themes/hexaware/assets/images/logo.svg" alt="" className='w-20'/>
                         </div>
-                    </Link> 
+                    </Link>
                 </div>
                 <div className="hidden md:flex space-x-6">
                     <Link to="/" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
                         Home
                     </Link>
-                    <Link to="/rider/features" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
-                        Features
+                    <Link to="/driver/dashboard" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
+                        Your Rides
                     </Link>
-                    <Link to="/about" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
-                        About
+                    <Link to="/driver/rideRequests" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
+                        Ride Requests
                     </Link>
                     <Link to="#contact" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
                         Contact
@@ -103,14 +102,14 @@ function Navbar() {
                             className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200"
                             onClick={() => setIsOpen(false)}
                         >
-                            Features
+                            Your Rides
                         </Link>
                         <Link
                             to="/about"
                             className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200"
                             onClick={() => setIsOpen(false)}
                         >
-                            About
+                            Ride Requests
                         </Link>
                         <Link
                             to="#contact"
@@ -151,4 +150,4 @@ function Navbar() {
     );
 }
 
-export default Navbar;
+export default NavbarDriver;

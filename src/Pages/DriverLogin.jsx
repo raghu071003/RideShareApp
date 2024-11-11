@@ -33,7 +33,7 @@ function DriverLogin() {
             if (response.status === 200) {
                 setLoggedIn(true);
                 setRole('driver');
-                navigate("/driver/dashboard");
+                navigate("/driver/");
             } else {
                 setErrorMessage(response.data.message || "Login failed. Please try again.");
                 setLoggedIn(false);
