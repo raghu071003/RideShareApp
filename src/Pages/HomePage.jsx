@@ -1,5 +1,6 @@
 import React from 'react';
 import { DollarSign, Shield, Car, IndianRupee, Map, Users, Clock } from 'lucide-react';
+import ChatBot from '../Components/Chatbot';
 
 
 function HomePage() {
@@ -37,7 +38,7 @@ function HomePage() {
       };
   return (
     <div className="bg-gray-50 min-h-screen w-full">
-    {/* Hero Section */}
+      <ChatBot />
     <section
       className="bg-blue-600 text-white py-24 text-center w-full"
       data-aos={fadeIn}
@@ -58,7 +59,6 @@ function HomePage() {
       </div>
     </section>
 
-    {/* Features Section */}
     <section
       id="features"
       className="py-20 w-full"
@@ -111,7 +111,6 @@ function HomePage() {
       </div>
     </section>
 
-    {/* How It Works Section */}
     <section
       id="how-it-works"
       className="py-20 bg-gray-100 w-full"
@@ -149,7 +148,6 @@ function HomePage() {
       </div>
     </section>
 
-    {/* Call-to-Action Section */}
     <section
       id="contact"
       className="bg-blue-600 text-white py-24 text-center w-full"
@@ -170,7 +168,6 @@ function HomePage() {
       </div>
     </section>
 
-    {/* Footer */}
     <footer className="bg-gray-800 text-white py-6 w-full">
       <div className="px-6 text-center">
         <p>&copy; 2024 RideShare. All rights reserved.</p>

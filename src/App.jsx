@@ -22,7 +22,11 @@ import NavbarDriver from './Components/NavbarDriver.jsx';
 import AdminNavbar from './Components/NavbarAdmin.jsx';
 import DriverHome from './Pages/DriverHome.jsx';
 import RideRequests from './Components/rideRequests.jsx';
-import NotificationBanner from './Components/NotificationRideRequests.jsx'; // Import the notification component
+import ContactPage from './Pages/Contact.jsx';
+import Downloads from './Components/Download.jsx';
+import AdminTracking from './Pages/AdminTracking.jsx';
+import ReportPage from './Pages/Reports.jsx';
+
 
 const ProtectedRoute = ({ children, isAuthenticated, redirectTo }) => {
     return isAuthenticated ? children : <Navigate to={redirectTo} />;
@@ -158,6 +162,39 @@ function App() {
                                 </ProtectedRoute>
                             }
                         />
+                        <Route
+                            path="/admin/downloads"
+                            element={
+                                <ProtectedRoute isAuthenticated={loggedIn && role === 'admin'} redirectTo="/admin-login">
+                                    <Downloads />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/tracking"
+                            element={
+                                <ProtectedRoute isAuthenticated={loggedIn && role === 'admin'} redirectTo="/admin-login">
+                                    <AdminTracking />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/tracking/:driverId"
+                            element={
+                                <ProtectedRoute isAuthenticated={loggedIn && role === 'admin'} redirectTo="/admin-login">
+                                    <Tracking />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/reports"
+                            element={
+                                <ProtectedRoute isAuthenticated={loggedIn && role === 'admin'} redirectTo="/admin-login">
+                                    <ReportPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route path='/contact' element={<ContactPage />} />
 
                         <Route path="/map" element={<MapboxRouting />} />
                     </Routes>

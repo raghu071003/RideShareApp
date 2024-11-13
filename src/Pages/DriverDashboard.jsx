@@ -5,6 +5,7 @@ import { MapPin, Clock, Car, Users } from 'lucide-react';
 import LocationTracker from '../Components/LocationTracker';
 import RideRequests from '../Components/rideRequests';
 
+
 const Dashboard = () => {
     const [showUpdateRide, setShowUpdateRide] = useState(false);
     const [rides, setRides] = useState([]);
@@ -75,6 +76,7 @@ const Dashboard = () => {
         <div className="flex flex-col min-h-screen p-8 bg-gradient-to-b from-blue-50 to-blue-100 w-full">
             <h2 className="text-4xl font-bold mb-8 text-center text-blue-800">Driver Dashboard</h2>
             <LocationTracker />
+            {/* <NotificationComponent /> */}
             {error && <p className="text-red-500 text-center">{error}</p>}
 
             <div className="flex-grow mb-10">
@@ -104,12 +106,12 @@ const Dashboard = () => {
                 )}
             </div>
 
-            <RideRequests 
+            {/* <RideRequests 
                 rideRequests={rideRequests}
                 loadingRequests={loadingRequests}
                 onAccept={handleAccept}
                 onReject={handleReject}
-            />
+            /> */}
 
             <div className="mt-10 text-center flex gap-10 justify-center">
                 <button

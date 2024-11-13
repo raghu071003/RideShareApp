@@ -47,7 +47,7 @@ function Navbar() {
                     <Link to="/about" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
                         About
                     </Link>
-                    <Link to="#contact" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
+                    <Link to="/contact" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
                         Contact
                     </Link>
                 </div>

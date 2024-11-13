@@ -3,6 +3,7 @@ import axios from 'axios';
 const RatingComponent = ({ onRatingSelect,ride }) => {
     const [rating, setRating] = useState(0);
     const [feedback, setFeedback] = useState({});
+    const [loading,setLoading] = useState(false);
     const handleRatingClick = (newRating) => {
         setRating(newRating);
         if (onRatingSelect) {
@@ -18,14 +19,20 @@ const RatingComponent = ({ onRatingSelect,ride }) => {
     
       const submitFeedback = async (rideId) => {
         try {
+          setLoading(true)
           const response = await axios.post(
             `http://localhost:8090/api/v1/user/feedback`, 
             { rideId, feedback: feedback[rideId],rating }, 
             { withCredentials: true }
           );
-          console.log('Feedback submitted:', response.data);
-          alert('Feedback submitted successfully!');
+          // console.log('Feedback submitted:', response.data);
+          if(response.status === 200){
+            alert('Feedback submitted successfully!');
+            setLoading(false)
+          }
+          
         } catch (error) {
+          setLoading(false)
           console.error('Error submitting feedback:', error);
         }
       };
@@ -46,7 +53,7 @@ const RatingComponent = ({ onRatingSelect,ride }) => {
                 <input
                   type="text"
                   placeholder="Write your feedback"
-                  className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border text-xl border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
                   value={feedback[ride.ride_id] || ''}
                   onChange={(e) => handleFeedbackChange(ride.ride_id, e.target.value)}
                 />
@@ -54,7 +61,7 @@ const RatingComponent = ({ onRatingSelect,ride }) => {
                   onClick={() => submitFeedback(ride.ride_id)}
                   className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
                 >
-                  Give Feedback
+                  {loading ? "Please Wait" : "Give Feedback"}
                 </button>
               </div>
         </div>

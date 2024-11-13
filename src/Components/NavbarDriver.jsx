@@ -46,7 +46,7 @@ function NavbarDriver() {
                     <Link to="/driver/rideRequests" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
                         Ride Requests
                     </Link>
-                    <Link to="#contact" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
+                    <Link to="/contact" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
                         Contact
                     </Link>
                 </div>
@@ -98,21 +98,21 @@ function NavbarDriver() {
                             Home
                         </Link>
                         <Link
-                            to="/rider/features"
+                            to="/driver/dashboard"
                             className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200"
                             onClick={() => setIsOpen(false)}
                         >
                             Your Rides
                         </Link>
                         <Link
-                            to="/about"
+                            to="/driver/rideRequests"
                             className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200"
                             onClick={() => setIsOpen(false)}
                         >
                             Ride Requests
                         </Link>
                         <Link
-                            to="#contact"
+                            to="/contact"
                             className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200"
                             onClick={() => setIsOpen(false)}
                         >

@@ -6,13 +6,17 @@ import RatingComponent from './RatingComponent';
 const CompletedRides = () => {
   const [loadingRides, setLoadingRides] = useState(true);
   const [completedRides, setCompletedRides] = useState([]);
-  
+  const [isModalOpen, setIsModalOpen] = useState(false); // For handling modal visibility
+  const [reportDetails, setReportDetails] = useState(""); // For storing report details
+  const [selectedRide, setSelectedRide] = useState(null); // For storing the selected ride
 
   useEffect(() => {
     const fetchCompletedRides = async () => {
       try {
         const response = await axios.get('http://localhost:8090/api/v1/user/completedRides', { withCredentials: true });
         setCompletedRides(response.data);
+        console.log(response.data);
+        
       } catch (error) {
         console.error('Error fetching completed rides:', error);
       } finally {
@@ -21,9 +25,32 @@ const CompletedRides = () => {
     };
 
     fetchCompletedRides();
+    
   }, []);
 
-  
+  // Handle reporting a driver
+  const handleReportDriver = async () => {
+    try {
+      const response = await axios.post('http://localhost:8090/api/v1/user/reportDriver', {
+        rideId: selectedRide.ride_id,
+        driverId: selectedRide.driver_id,
+        driverName: selectedRide.driver_name, // Assuming driver name is available in the ride data
+        driverContact: selectedRide.mobile_no,
+        reportDetails: reportDetails,
+      }, { withCredentials: true });
+
+      if (response.data.success) {
+        alert('Report submitted successfully');
+        setIsModalOpen(false); // Close the modal
+        setReportDetails(""); // Clear report details
+      } else {
+        alert('Failed to submit the report');
+      }
+    } catch (error) {
+      console.error('Error reporting driver:', error);
+      alert('Error submitting the report');
+    }
+  };
 
   return (
     <div className="mt-10">
@@ -42,7 +69,10 @@ const CompletedRides = () => {
               </h4>
               <div className="space-y-2 text-gray-700">
                 <p>
-                  <strong><User className="inline mr-1" /> Rider ID:</strong> {ride.rider_id}
+                  <strong><User className="inline mr-1" /> Driver ID:</strong> {ride.driver_id}
+                </p>
+                <p>
+                  <strong><User className="inline mr-1" /> Driver Name:</strong> {ride.driver_name}
                 </p>
                 <p>
                   <strong><MapPin className="inline mr-1" /> Source:</strong> {ride.source}
@@ -65,14 +95,52 @@ const CompletedRides = () => {
                 <p>
                   <strong><Monitor className="inline mr-1" /> Status:</strong> {ride.status}
                 </p>
-                <RatingComponent ride={ride}/>
+                <RatingComponent ride={ride} />
+
+                <button
+                  onClick={() => {
+                    setSelectedRide(ride); // Store selected ride details
+                    setIsModalOpen(true); // Open the report modal
+                  }}
+                  className="absolute top-2 right-4 mt-4 bg-red-500 text-white p-2 rounded-lg hover:bg-red-400"
+                >
+                  Report Driver
+                </button>
               </div>
-              
             </div>
           ))}
         </div>
       ) : (
         <p className="text-center text-gray-600">No completed rides found.</p>
+      )}
+
+      {/* Modal for reporting driver */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h3 className="text-xl font-semibold mb-4 text-center">Report Driver</h3>
+            <textarea
+              value={reportDetails}
+              onChange={(e) => setReportDetails(e.target.value)}
+              className="w-full h-32 p-2 border border-gray-300 rounded-lg"
+              placeholder="Enter your report details here..."
+            />
+            <div className="mt-4 flex justify-between">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReportDriver}
+                className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-400"
+              >
+                Submit Report
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

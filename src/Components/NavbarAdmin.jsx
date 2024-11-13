@@ -38,17 +38,17 @@ function AdminNavbar() {
                     </Link> 
                 </div>
                 <div className="hidden md:flex space-x-6">
-                    <Link to="/" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
+                    <Link to="/admin/dashboard" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
                         Home
                     </Link>
-                    <Link to="/rider/features" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
-                        Features
+                    <Link to="/admin/downloads" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
+                        Downloads
                     </Link>
-                    <Link to="/about" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
-                        About
+                    <Link to="/admin/tracking" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
+                        Location History
                     </Link>
-                    <Link to="#contact" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
-                        Contact
+                    <Link to="/admin/reports" className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200">
+                        Reports
                     </Link>
                 </div>
                 <div className="hidden md:flex items-center">
@@ -92,32 +92,32 @@ function AdminNavbar() {
                 <div className="md:hidden transition-all duration-300 ease-in-out">
                     <div className="flex flex-col items-center space-y-4 py-4 border-t border-gray-200">
                         <Link
-                            to="/"
+                            to="/admin/dashboard"
                             className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200"
                             onClick={() => setIsOpen(false)}
                         >
                             Home
                         </Link>
                         <Link
-                            to="/rider/features"
+                            to="/admin/downloads"
                             className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200"
                             onClick={() => setIsOpen(false)}
                         >
-                            Features
+                            Downloads
                         </Link>
                         <Link
-                            to="/about"
+                            to="/admin/tracking"
                             className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200"
                             onClick={() => setIsOpen(false)}
                         >
-                            About
+                            Location History
                         </Link>
                         <Link
-                            to="#contact"
+                            to="/admin/reports"
                             className="text-gray-200 font-medium hover:text-blue-600 transition-colors duration-200"
                             onClick={() => setIsOpen(false)}
                         >
-                            Contact
+                            Reports
                         </Link>
                         {loggedIn ? (
                             <button

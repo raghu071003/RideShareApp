@@ -2,18 +2,22 @@ import React, { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MapIcon, Car } from 'lucide-react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2FpcmFnaHUiLCJhIjoiY20wbTVibnFnMGI1dzJwczhiaGV1ZzRpNyJ9.bmz6PzeKxEIQSXCR7OxYXA';
 
 const Tracking = () => {
+  const {driverId} = useParams();
+
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
   const [coordinates, setCoordinates] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchCoordinates = async () => {
+
     try {
-      const driver_Id = 1;
+      const driver_Id = driverId;
       const response = await axios.get(`http://localhost:8090/api/v1/user/getCordinates/${driver_Id}`);
       const data = response.data.location;
       
@@ -64,11 +68,8 @@ const Tracking = () => {
       center: [80.2785, 13.0878],
       zoom: 12, 
     });
-    
-
+  
     setMap(initializeMap);
-
-    // Immediately fetch coordinates when map is initialized
     fetchCoordinates().then(initialCoords => {
       if (initialCoords) {
         const customMarker = createCustomMarker();
